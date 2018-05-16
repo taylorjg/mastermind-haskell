@@ -22,6 +22,9 @@ allScores = [Score bs ws | bs <- [0..4], ws <- [0..4 - bs], not (bs == 3 && ws =
 pegs :: Code -> [Peg]
 pegs code = [p0 code, p1 code, p2 code, p3 code]
 
+initialGuess :: Code
+initialGuess = Code R R G G
+
 evaluateGuess :: Code -> Code -> Score
 evaluateGuess secret guess =
   Score blacks whites
@@ -35,5 +38,29 @@ evaluateGuess secret guess =
     whites = sumOfMins - blacks
 
 autosolve :: (Code -> Score) -> [(Code, Score)]
-autosolve attempt =
-  []
+autosolve attempt = reverse $ autosolve' attempt allCodes []
+
+autosolve' :: (Code -> Score) -> [Code] -> [(Code, Score)] -> [(Code, Score)]
+autosolve' attempt set acc =
+  if blacks score == 4 then acc' else autosolve' attempt set' acc'
+  where
+    guess = case (set, acc) of
+      (_, [])     -> initialGuess
+      ([code], _) -> code
+      _           -> calculateNewGuess set
+    score = attempt guess
+    set' = filter (\code -> evaluateGuess code guess == score) set
+    acc' = (guess, score) : acc
+
+calculateNewGuess :: [Code] -> Code
+calculateNewGuess set =
+  snd best
+  where
+    best = foldl op1 (maxBound :: Int, initialGuess) set
+    op1 currentBest unusedCode =
+      if x < fst currentBest then (x, unusedCode) else currentBest
+      where
+        x = foldl op2 0 allScores
+        op2 currentMax score =
+          max currentMax y
+          where y = length $ filter (\code -> evaluateGuess unusedCode code == score) set
