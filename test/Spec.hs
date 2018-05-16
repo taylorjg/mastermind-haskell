@@ -9,48 +9,48 @@ main = hspec $
     describe "evaluateGuess" $ do
 
       it "no overlap" $ do
-        let secret = Code { p0 = R, p1 = G, p2 = B, p3 = Y }
-        let guess = Code { p0 = BL, p1 = BL, p2 = WH, p3 = WH }
+        let secret = Code R G B Y
+        let guess = Code BL BL WH WH
         let score = evaluateGuess secret guess
-        score `shouldBe` Score { blacks = 0, whites = 0 }
+        score `shouldBe` Score 0 0
 
       it "exact match" $ do
-        let secret = Code { p0 = R, p1 = G, p2 = B, p3 = Y }
-        let guess = Code { p0 = R, p1 = G, p2 = B, p3 = Y }
+        let secret = Code R G B Y
+        let guess = Code R G B Y
         let score = evaluateGuess secret guess
-        score `shouldBe` Score { blacks = 4, whites = 0 }
+        score `shouldBe` Score 4 0
 
       it "correct colours in wrong positions" $ do
-        let secret = Code { p0 = R, p1 = G, p2 = B, p3 = Y }
-        let guess = Code { p0 = Y, p1 = B, p2 = G, p3 = R }
+        let secret = Code R G B Y
+        let guess = Code Y B G R
         let score = evaluateGuess secret guess
-        score `shouldBe` Score { blacks = 0, whites = 4 }
+        score `shouldBe` Score 0 4
 
       it "scenario 1" $ do
-        let secret = Code { p0 = G, p1 = G, p2 = B, p3 = B }
-        let guess = Code { p0 = B, p1 = B, p2 = G, p3 = G }
+        let secret = Code G G B B
+        let guess = Code B B G G
         let score = evaluateGuess secret guess
-        score `shouldBe` Score { blacks = 0, whites = 4 }
+        score `shouldBe` Score 0 4
 
       it "scenario 2" $ do
-        let secret = Code { p0 = G, p1 = G, p2 = B, p3 = B }
-        let guess = Code { p0 = B, p1 = B, p2 = G, p3 = Y }
+        let secret = Code G G B B
+        let guess = Code B B G Y
         let score = evaluateGuess secret guess
-        score `shouldBe` Score { blacks = 0, whites = 3 }
+        score `shouldBe` Score 0 3
 
       it "scenario 3" $ do
-        let secret = Code { p0 = G, p1 = G, p2 = B, p3 = Y }
-        let guess = Code { p0 = B, p1 = B, p2 = G, p3 = G }
+        let secret = Code G G B Y
+        let guess = Code B B G G
         let score = evaluateGuess secret guess
-        score `shouldBe` Score { blacks = 0, whites = 3 }
+        score `shouldBe` Score 0 3
 
       it "scenario 4" $ do
-        let secret = Code { p0 = B, p1 = Y, p2 = WH, p3 = WH }
-        let guess = Code { p0 = B, p1 = WH, p2 = Y, p3 = Y }
+        let secret = Code B Y WH WH
+        let guess = Code B WH Y Y
         let score = evaluateGuess secret guess
-        score `shouldBe` Score { blacks = 1, whites = 2 }
+        score `shouldBe` Score 1 2
 
     describe "autosolve" $
 
-      it "fixed secret" $ do
+      it "fixed secret" $
         1 `shouldBe` 1
