@@ -4,6 +4,9 @@ import           Mastermind
 
 main :: IO ()
 main = do
-  let c1 = Code R R G G
-  let c2 = Code R R G G
-  putStrLn "Hello, Haskell!"
+  let secret = Code G B BL WH
+  putStrLn $ "secret: " ++ show secret
+  let guesses = autosolve (evaluateGuess secret)
+  putStrLn $ "Number of guesses: " ++ show (length guesses)
+  let showGuess guess = "guess: " ++ show (fst guess) ++ " score: " ++ show (snd guess)
+  mapM_ (putStrLn . showGuess) guesses

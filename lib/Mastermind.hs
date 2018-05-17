@@ -6,9 +6,24 @@ module Mastermind (
   autosolve
 ) where
 
-data Peg = R | G | B | Y | BL | WH deriving (Eq, Show)
-data Code = Code { p0 :: Peg, p1 :: Peg, p2 :: Peg, p3 :: Peg } deriving (Eq, Show)
-data Score = Score { blacks :: Int, whites :: Int } deriving (Eq, Show)
+data Peg = R | G | B | Y | BL | WH deriving Eq
+data Code = Code { p0 :: Peg, p1 :: Peg, p2 :: Peg, p3 :: Peg } deriving Eq
+data Score = Score { blacks :: Int, whites :: Int } deriving Eq
+
+instance Show Peg where
+  show peg = case peg of
+    R  -> "0"
+    G  -> "1"
+    B  -> "2"
+    Y  -> "3"
+    BL -> "4"
+    WH -> "5"
+
+instance Show Code where
+  show code = concatMap show $ pegs code
+
+instance Show Score where
+  show score = show (blacks score) ++ show (whites score)
 
 allPegs :: [Peg]
 allPegs = [R, G, B, Y, BL, WH]
