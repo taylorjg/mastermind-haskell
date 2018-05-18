@@ -3,7 +3,8 @@ module Mastermind (
   Code(..),
   Score(..),
   evaluateGuess,
-  autosolve
+  autosolve,
+  allCodes
 ) where
 
 data Peg = R | G | B | Y | BL | WH deriving Eq
