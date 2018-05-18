@@ -64,7 +64,7 @@ autosolve' attempt set acc =
       ([code], _) -> code
       _           -> calculateNewGuess set
     score = attempt guess
-    set' = filter (\code -> evaluateGuess code guess == score) set
+    set' = filter ((score ==) . evaluateGuess guess) set
     acc' = (guess, score) : acc
 
 calculateNewGuess :: [Code] -> Code
@@ -78,4 +78,4 @@ calculateNewGuess set =
         x = foldl op2 0 allScores
         op2 currentMax score =
           max currentMax y
-          where y = length $ filter (\code -> evaluateGuess unusedCode code == score) set
+          where y = length $ filter ((score ==) . evaluateGuess unusedCode) set
