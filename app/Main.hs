@@ -14,10 +14,11 @@ autosolveSecret secret = do
 autosolveAll :: IO ()
 autosolveAll = mapM_ autosolveSecret allCodes
 
-autosolveOne :: IO ()
-autosolveOne = do
-  let secret = Code G B BL WH
-  autosolveSecret secret
+autosolveFixed :: IO ()
+autosolveFixed = autosolveSecret $ Code G B BL WH
+
+autosolveRandom :: IO ()
+autosolveRandom = generateSecret >>= autosolveSecret
 
 data Flag = All | Help deriving (Eq, Show)
 
@@ -39,8 +40,7 @@ main :: IO ()
 main = do
   argv <- getArgs
   flags <- parseArgs argv
-  if Help `elem` flags
-    then putStrLn $ usageInfo header options
-    else if All `elem` flags
-      then autosolveAll
-      else autosolveOne
+  case flags of
+    [All] -> autosolveAll
+    []    -> autosolveRandom
+    _     -> putStrLn $ usageInfo header options

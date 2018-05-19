@@ -2,10 +2,14 @@ module Mastermind (
   Peg(..),
   Code(..),
   Score(..),
+  generateSecret,
   evaluateGuess,
   autosolve,
   allCodes
 ) where
+
+import           Data.Maybe    (fromMaybe)
+import           System.Random
 
 data Peg = R | G | B | Y | BL | WH deriving Eq
 data Code = Code { p0 :: Peg, p1 :: Peg, p2 :: Peg, p3 :: Peg } deriving Eq
@@ -19,6 +23,21 @@ instance Show Peg where
     Y  -> "3"
     BL -> "4"
     WH -> "5"
+
+intToPeg :: Int -> Maybe Peg
+intToPeg n = case n of
+    0 -> Just R
+    1 -> Just G
+    2 -> Just B
+    3 -> Just Y
+    4 -> Just BL
+    5 -> Just WH
+    _ -> Nothing
+
+instance Read Peg where
+  readsPrec _ r = case intToPeg $ read r of
+    Just peg -> [(peg, "")]
+    Nothing  -> []
 
 instance Show Code where
   show code = concatMap show $ pegs code
@@ -38,8 +57,16 @@ allScores = [Score bs ws | bs <- [0..4], ws <- [0..4 - bs], not (bs == 3 && ws =
 pegs :: Code -> [Peg]
 pegs code = [p0 code, p1 code, p2 code, p3 code]
 
-initialGuess :: Code
-initialGuess = Code R R G G
+randomPeg :: IO Peg
+randomPeg = fromMaybe R . intToPeg <$> getStdRandom (randomR (0, 5))
+
+generateSecret :: IO Code
+generateSecret = do
+  p0 <- randomPeg
+  p1 <- randomPeg
+  p2 <- randomPeg
+  p3 <- randomPeg
+  return $ Code p0 p1 p2 p3
 
 evaluateGuess :: Code -> Code -> Score
 evaluateGuess secret guess =
@@ -55,6 +82,9 @@ evaluateGuess secret guess =
 
 autosolve :: (Code -> Score) -> [(Code, Score)]
 autosolve attempt = reverse $ autosolve' attempt allCodes []
+
+initialGuess :: Code
+initialGuess = Code R R G G
 
 autosolve' :: (Code -> Score) -> [Code] -> [(Code, Score)] -> [(Code, Score)]
 autosolve' attempt set acc =
