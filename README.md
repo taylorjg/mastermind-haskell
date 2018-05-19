@@ -4,8 +4,11 @@ Haskell implementation of Knuth's algorithm to solve MasterMind within 5 guesses
 
 ## TODO
 
-* [ ] Generate random secrets
-* [ ] Implement command line args
+* [x] Generate random secrets
+* [x] Implement command line args
+* [ ] Draw histogram when `-all` is specified
+* [ ] Parallelise using the [Par monad](https://hackage.haskell.org/package/monad-par) when `-all` is specified
+* [ ] Add metrics
 
 ## Links
 
