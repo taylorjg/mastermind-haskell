@@ -1,9 +1,13 @@
 module Main where
 
-import           Data.Maybe            (fromMaybe)
+import           Control.Monad
+import           Control.Parallel.Strategies
+import           Data.List
+import           Data.List.Split             (chunksOf)
+import           Data.Maybe                  (fromMaybe)
 import           Mastermind
 import           System.Console.GetOpt
-import           System.Environment    (getArgs)
+import           System.Environment          (getArgs)
 
 autosolveSecret secret = do
   putStrLn $ "secret: " ++ show secret
@@ -12,8 +16,19 @@ autosolveSecret secret = do
   let showGuess guess = "guess: " ++ show (fst guess) ++ " score: " ++ show (snd guess)
   mapM_ (putStrLn . showGuess) guesses
 
+autosolveWithSummary :: Code -> String
+autosolveWithSummary secret = do
+  let guesses = autosolve (evaluateGuess secret)
+  "secret: " ++ show secret ++ " => #guesses: " ++ show (length guesses)
+
 autosolveAll :: IO ()
-autosolveAll = mapM_ autosolveSecret allCodes
+autosolveAll =
+  putStr ls
+  where
+    ls = unlines $ concat rs
+    rs = map f chunks `using` parList rdeepseq
+    f = map autosolveWithSummary
+    chunks = chunksOf 36 allCodes
 
 autosolveRandom :: IO ()
 autosolveRandom = generateSecret >>= autosolveSecret
