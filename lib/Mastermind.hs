@@ -5,7 +5,8 @@ module Mastermind (
   generateSecret,
   evaluateGuess,
   autosolve,
-  allCodes
+  allCodes,
+  intToPeg
 ) where
 
 import           Data.Maybe    (fromMaybe)

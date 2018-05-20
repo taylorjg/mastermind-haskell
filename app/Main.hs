@@ -1,5 +1,6 @@
 module Main where
 
+import           Data.Maybe            (fromMaybe)
 import           Mastermind
 import           System.Console.GetOpt
 import           System.Environment    (getArgs)
@@ -14,18 +15,25 @@ autosolveSecret secret = do
 autosolveAll :: IO ()
 autosolveAll = mapM_ autosolveSecret allCodes
 
-autosolveFixed :: IO ()
-autosolveFixed = autosolveSecret $ Code G B BL WH
-
 autosolveRandom :: IO ()
 autosolveRandom = generateSecret >>= autosolveSecret
 
-data Flag = All | Help deriving (Eq, Show)
+data Flag = All | Help | Secret Code deriving (Eq, Show)
+
+stringToCodeFlag :: String -> Flag
+stringToCodeFlag s =
+  Secret code
+  where
+    code = Code p0 p1 p2 p3
+    -- TODO: need to validate 's' (4 x numbers 0-5)
+    -- TODO: ideally, don't expose intToPeg from Lib
+    [p0, p1, p2, p3] = map (fromMaybe R . intToPeg . read . (:[])) s
 
 options :: [OptDescr Flag]
 options =
-  [ Option ['a']     ["all"]  (NoArg All)  "exhaustively autosolve all secrets"
-  , Option ['h','?'] ["help"] (NoArg Help) "display this usage information"
+  [ Option ['a']     ["all"]    (NoArg All)                        "exhaustively autosolve all secrets"
+  , Option ['s']     ["secret"] (ReqArg stringToCodeFlag "secret") "autosolve the given secret e.g. 1245"
+  , Option ['h','?'] ["help"]   (NoArg Help)                       "display this usage information"
   ]
 
 header = "Usage: mastermind [OPTION]"
@@ -41,6 +49,7 @@ main = do
   argv <- getArgs
   flags <- parseArgs argv
   case flags of
-    [All] -> autosolveAll
-    []    -> autosolveRandom
-    _     -> putStrLn $ usageInfo header options
+    [All]           -> autosolveAll
+    [Secret secret] -> autosolveSecret secret
+    []              -> autosolveRandom
+    _               -> putStrLn $ usageInfo header options
