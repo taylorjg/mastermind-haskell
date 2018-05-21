@@ -50,10 +50,18 @@ main = hspec $
         let score = evaluateGuess secret guess
         score `shouldBe` Score 1 2
 
-    describe "autosolve" $
+    describe "autosolve" $ do
 
-      it "fixed secret" $ do
+      it "fixed secret G B BL WH" $ do
         let secret = Code G B BL WH
+        let guesses = autosolve (evaluateGuess secret)
+        length guesses `shouldSatisfy` (<= 5)
+        let lastPair = last guesses
+        fst lastPair `shouldBe` secret
+        snd lastPair `shouldBe` Score 4 0
+
+      it "fixed secret R R G WH" $ do
+        let secret = Code R R G WH
         let guesses = autosolve (evaluateGuess secret)
         length guesses `shouldSatisfy` (<= 5)
         let lastPair = last guesses

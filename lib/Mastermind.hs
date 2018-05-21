@@ -103,7 +103,7 @@ calculateNewGuess :: [Code] -> Code
 calculateNewGuess set =
   snd best
   where
-    best = foldl op1 (maxBound :: Int, initialGuess) set
+    best = foldl op1 (maxBound :: Int, initialGuess) allCodes
     op1 currentBest unusedCode =
       if x < fst currentBest then (x, unusedCode) else currentBest
       where

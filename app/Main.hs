@@ -1,8 +1,7 @@
 module Main where
 
-import           Control.Monad
 import           Control.Parallel.Strategies
-import           Data.List
+import           Data.List                   (group, sort)
 import           Data.List.Split             (chunksOf)
 import           Data.Maybe                  (fromMaybe)
 import           Mastermind
@@ -16,18 +15,13 @@ autosolveSecret secret = do
   let showGuess guess = "guess: " ++ show (fst guess) ++ " score: " ++ show (snd guess)
   mapM_ (putStrLn . showGuess) guesses
 
-autosolveWithSummary :: Code -> String
-autosolveWithSummary secret = do
-  let guesses = autosolve (evaluateGuess secret)
-  "secret: " ++ show secret ++ " => #guesses: " ++ show (length guesses)
-
 autosolveAll :: IO ()
 autosolveAll =
-  putStr ls
+  mapM_ (\(a, b) -> putStrLn $ show a ++ " " ++ show b) hdata
   where
-    ls = unlines $ concat rs
-    rs = map f chunks `using` parList rdeepseq
-    f = map autosolveWithSummary
+    hdata = map (\rs -> (head rs, length rs)) $ (group . sort . concat) rss
+    rss = map f chunks `using` parList rdeepseq
+    f = map (length . autosolve . evaluateGuess)
     chunks = chunksOf 36 allCodes
 
 autosolveRandom :: IO ()
