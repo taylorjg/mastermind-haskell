@@ -8,21 +8,25 @@ import           Mastermind
 import           System.Console.GetOpt
 import           System.Environment          (getArgs)
 
+autosolveAll :: IO ()
+autosolveAll =
+  mapM_ (putStrLn . formatLine) hdata
+  where
+    formatLine (numGuesses, numSecrets) =
+      show numGuesses ++ "\t" ++
+      show numSecrets ++ "\t" ++
+      replicate (numSecrets `quot` 12) '*'
+    hdata = map (\rs -> (head rs, length rs)) $ (group . sort . concat) rss
+    rss = map f chunks `using` parList rdeepseq
+    f = map (length . autosolve . evaluateGuess)
+    chunks = chunksOf 36 allCodes
+
 autosolveSecret secret = do
   putStrLn $ "secret: " ++ show secret
   let guesses = autosolve (evaluateGuess secret)
   putStrLn $ "Number of guesses: " ++ show (length guesses)
   let showGuess guess = "guess: " ++ show (fst guess) ++ " score: " ++ show (snd guess)
   mapM_ (putStrLn . showGuess) guesses
-
-autosolveAll :: IO ()
-autosolveAll =
-  mapM_ (\(a, b) -> putStrLn $ show a ++ " " ++ show b) hdata
-  where
-    hdata = map (\rs -> (head rs, length rs)) $ (group . sort . concat) rss
-    rss = map f chunks `using` parList rdeepseq
-    f = map (length . autosolve . evaluateGuess)
-    chunks = chunksOf 36 allCodes
 
 autosolveRandom :: IO ()
 autosolveRandom = generateSecret >>= autosolveSecret

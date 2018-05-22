@@ -7,7 +7,7 @@ Haskell implementation of Knuth's algorithm to solve MasterMind within 5 guesses
 * [x] Generate random secrets
 * [x] Implement command line args
 * [x] Add option to pass a secret from the command line
-* [ ] Draw histogram when `-all` is specified
+* [x] Draw histogram when `-all` is specified
 * [x] Parallelise using the [Par monad](https://hackage.haskell.org/package/monad-par) when `-all` is specified
 * [ ] Add metrics
 
